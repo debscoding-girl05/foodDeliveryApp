@@ -1,4 +1,7 @@
 {
   "name": "foodDelivApp",
-  "slug": "foodDelivApp"
+  "slug": "foodDelivApp",
+  "android": {
+    "package": "com.KevinneApp.foodDelivApp"
+  }
 }
