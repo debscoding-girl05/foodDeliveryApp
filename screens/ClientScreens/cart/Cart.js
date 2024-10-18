@@ -8,19 +8,20 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import useCartStore from "../store/CartStore";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import useCartStore from "../../../store/CartStore";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { dishes } from "../data/dishesData";
-import Feather from "@expo/vector-icons/Feather";
+import { dishes } from "../../../data/dishesData";
+
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
 import Entypo from "@expo/vector-icons/Entypo";
+import HeaderNotif from "../../../components/HeaderNotif";
 
 export default function CartScreen() {
   const { cartItems, removeFromCart, clearCart, increaseQty, decreaseQty } =
     useCartStore();
-    const navigation= useNavigation();
+  const navigation = useNavigation();
 
   // Get the dishes that are in the cart based on their IDs
   const cartDishes = dishes.filter((dish) =>
@@ -33,7 +34,7 @@ export default function CartScreen() {
     return cartItem ? total + cartItem.quantity * dish.price : total;
   }, 0);
 
-  const rightSwipeActions = ()=>{
+  const rightSwipeActions = () => {
     return (
       <View
         style={{
@@ -41,42 +42,21 @@ export default function CartScreen() {
           justifyContent: "center",
           alignItems: "center",
           width: 60,
-          borderRadius:15
+          borderRadius: 15,
         }}
       >
         <FontAwesome6 name="trash" size={28} color="white" />
       </View>
     );
-  }
+  };
   const swipeFromRightOpen = (item) => {
     removeFromCart(item.id);
-    Alert.alert("Deleted", `You deleted: ${item.name}`);
+    Alert.alert("Deleted", `Vous avez effacer: ${item.name}`);
   };
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Feather
-            name="chevron-left"
-            size={24}
-            color="black"
-            onPress={() => navigation.goBack()}
-          />
-        </TouchableOpacity>
-        <Text
-          style={{
-            fontSize: 29,
-            fontWeight: "bold",
-            marginVertical: 10,
-            color: "black",
-            alignSelf: "center",
-            marginLeft: 50,
-          }}
-        >
-          Votre Panier
-        </Text>
-      </View>
+       <HeaderNotif title="Mon Panier"/>
 
       {cartDishes.length > 0 ? (
         <ScrollView>
@@ -145,9 +125,9 @@ export default function CartScreen() {
               </Swipeable>
             );
           })}
-          
+
           <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>Total Price: {totalPrice} FCFA</Text>
+            <Text style={styles.totalText}>Total : {totalPrice} FCFA</Text>
 
             <View style={{ flexDirection: "column", gap: 15 }}>
               <TouchableOpacity style={styles.button1} onPress={clearCart}>
@@ -164,7 +144,7 @@ export default function CartScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate("CommandsScreen")}
+                onPress={() => navigation.navigate("OrderProcess")}
               >
                 <Text
                   style={{
@@ -174,15 +154,14 @@ export default function CartScreen() {
                     fontWeight: "600",
                   }}
                 >
-                 Commander
+                  Commander
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
-         
         </ScrollView>
       ) : (
-        <Text style={styles.emptyText}>Your cart is empty.</Text>
+        <Text style={styles.emptyText}>Panier Vide.</Text>
       )}
     </GestureHandlerRootView>
   );
@@ -192,16 +171,8 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 15,
     backgroundColor: "#fff",
-  },
-  header: {
-    paddingBottom: 5,
-    flexDirection: "column",
-    justifyContent: "space-around",
-    marginTop: 40,
-    marginRight: 35,
-    marginLeft: 5,
   },
   itemContainer: {
     flexDirection: "row",
@@ -210,7 +181,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#E0E0E0",
     shadowColor: "#000",
-    marginVertical: 7,
+    marginTop: 10,
     borderRadius: 22,
     paddingHorizontal: 5,
   },
@@ -231,14 +202,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: 22,
     textAlign: "center",
-    height:24
+    height: 24,
   },
   totalContainer: {
     marginTop: 20,
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#ccc",
-
   },
   totalText: {
     fontSize: 20,

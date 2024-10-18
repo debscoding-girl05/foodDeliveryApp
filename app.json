@@ -2,6 +2,7 @@
   "name": "foodDelivApp",
   "slug": "foodDelivApp",
   "android": {
-    "package": "com.KevinneApp.foodDelivApp"
+    "package": "com.KevinneApp.foodDelivApp",
+     "permissions": ["ACCESS_FINE_LOCATION"]
   }
 }

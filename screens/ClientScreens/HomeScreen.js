@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, Image, ScrollView, Alert } from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import { SearchBar } from "@rneui/themed";
 import { Pressable } from "react-native";
 import { TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import { dishes } from "../data/dishesData";
-import useFavoriteStore from "../store/FavoriteStore";
+import { dishes } from "../../data/dishesData";
+import useFavoriteStore from "../../store/FavoriteStore";
 
 
 function HomeScreen() {
@@ -98,33 +98,40 @@ function HomeScreen() {
                     onPress={() => navigation.push("singleDish", { dish })}
                   >
                     <View>
-                      <TouchableOpacity onPress={()=>toggleFavorite(dish.id)}
-                      style={{
-                        zIndex:10,
-                        marginBottom:-35,
-                        backgroundColor:'white',
-                        height:33,
-                        width:32,
-                        borderRadius:55,
-                        alignContent:'center',
-                        justifyContent:'center',
-                        alignSelf:'flex-end',
-                        marginRight:5
-                      }}>
+                      <TouchableOpacity
+                        onPress={() => toggleFavorite(dish.id)}
+                        style={{
+                          zIndex: 10,
+                          marginBottom: -35,
+                          backgroundColor: "white",
+                          height: 33,
+                          width: 32,
+                          borderRadius: 55,
+                          alignContent: "center",
+                          justifyContent: "center",
+                          alignSelf: "flex-end",
+                          marginRight: 5,
+                        }}
+                      >
                         {favorites.includes(dish.id) ? (
                           <Ionicons name="heart-sharp" size={30} color="red" />
                         ) : (
                           <Ionicons
                             name="heart-outline"
                             size={30}
-                            color="black"
+                            color="red"
                           />
                         )}
                       </TouchableOpacity>
                     </View>
                     <Image
                       source={dish.image}
-                      style={{ width: 165, height: 165, borderRadius: 20 }}
+                      style={{
+                        width: 165,
+                        height: 165,
+                        borderRadius: 20,
+                        marginTop: -2,
+                      }}
                     />
                   </TouchableOpacity>
                   <View
@@ -140,10 +147,12 @@ function HomeScreen() {
                       onPress={() => navigation.push("singleDish", { dish })}
                       style={{ flexDirection: "column" }}
                     >
-                      <Text style={{ fontWeight: "500", fontSize:'16' }}>{dish.name}</Text>
+                      <Text style={{ fontWeight: "500", fontSize: 16 }}>
+                        {dish.name}
+                      </Text>
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
                           color: "#D1170B",
                           textAlign: "center",
                           fontWeight: "400",

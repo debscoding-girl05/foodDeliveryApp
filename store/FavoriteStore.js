@@ -5,7 +5,7 @@ import { dishes } from "../data/dishesData";
 
 const useFavoriteStore = create(
   persist(
-    (set,get) => ({
+    (set, get) => ({
       favorites: [],
       toggleFavorite: (dishId) => {
         set((state) => {
@@ -16,7 +16,13 @@ const useFavoriteStore = create(
           }
         });
       },
+      deleteFavorite: (dishId) =>
+        set((state) => ({
+          favorites: state.favorites.filter((id) => id !== dishId),
+        })),
+      clearFavorite: () => set({ favorites: [] }),
     }),
+
     {
       name: "favorite-storage", // Key for AsyncStorage
       storage: createJSONStorage(() => AsyncStorage),

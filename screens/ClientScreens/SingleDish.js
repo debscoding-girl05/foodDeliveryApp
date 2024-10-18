@@ -6,20 +6,17 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import useCartStore from '../store/CartStore';
-import useFavoriteStore from '../store/FavoriteStore';
+import useCartStore from '../../store/CartStore';
+import useFavoriteStore from '../../store/FavoriteStore';
 
 function SingleDish({route, navigation}) {
     const {dish} = route.params;
     const [quantity, setQuantity]=useState(1);
     const totalPrice = dish.price * quantity;
-    const [isLiked, setIsLiked] = useState(false);
     const {favorites, toggleFavorite} = useFavoriteStore();
      const addToCart = useCartStore((state) => state.addToCart);
 
-    const toggleLike= () =>{
-      setIsLiked(!isLiked);
-    }
+
 
     const handleAddToCart = () => {
       addToCart(dish, quantity); // Add dish and quantity to cart
@@ -28,8 +25,8 @@ function SingleDish({route, navigation}) {
    
     
   return (
-    <SafeAreaView style={StyleSheet.container}>
-      <View style={StyleSheet.dishcontainer}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.dishcontainer}>
         <View style={styles.headerContainer}>
           <TouchableOpacity>
             <Feather
@@ -183,6 +180,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+    padding:8
   },
   dishcontainer: {
     backgroundColor: "#FFFFFF",
@@ -191,7 +189,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 40,
+    marginTop: 20,
     marginRight: 35,
     marginLeft: 20,
     zIndex: 5,
@@ -218,7 +216,7 @@ const styles = StyleSheet.create({
   totalPrice: {
     fontSize: 18,
     fontWeight: "bold",
-    marginVertical: 20,
+    marginVertical: 10,
     marginLeft: 20,
   },
   button: {

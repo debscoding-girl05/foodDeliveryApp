@@ -3,6 +3,7 @@ import {View,Text, StyleSheet, TouchableOpacity,} from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import Fontisto from "@expo/vector-icons/Fontisto";
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Header =({title, onPress})=>{
   const navigation = useNavigation();
@@ -29,9 +30,9 @@ const Header =({title, onPress})=>{
         </View>
         <TouchableOpacity
           onPress={() => navigation.navigate("cartScreen")}
-          styles={{ marginRight:45 }}
+          styles={{ marginRight: 45 }}
         >
-          <Fontisto name="shopping-bag" size={22} color="white" />
+          <Ionicons name="notifications" size={26} color="white" />
         </TouchableOpacity>
       </View>
     );

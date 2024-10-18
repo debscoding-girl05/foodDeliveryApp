@@ -7,7 +7,7 @@ import { ScrollView, TouchableOpacity } from 'react-native'
 import { View, Text, Image, TextInput } from 'react-native'
 import Animated ,{ Easing,FadeInDown, FadeInUp,SlideInLeft } from 'react-native-reanimated';
 import {z} from 'zod';
-import FormInput from '../components/formInput';
+import FormInput from '../../components/formInput';
  
 const formSchema = z.object({
    name:z.string().min(3, "Nom doit avoir au moin 3 caractères"),
@@ -46,7 +46,7 @@ export default function SignupScreen() {
 
         {/*image*/}
      <View className="flex-row justify-around w-full absolute">
-          <Animated.Image entering={SlideInLeft.duration(900).easing(Easing.in(Easing.quad))} className="h-[150] w-[300] mx-5 mt-20" source={require('../assets/images/order.png')}/>
+          <Animated.Image entering={SlideInLeft.duration(900).easing(Easing.in(Easing.quad))} className="h-[150] w-[300] mx-5 mt-20" source={require('../../assets/images/order.png')}/>
      </View>
      {/*Title and form*/}
      <View className="h-full w-full justify-around pt-40">
