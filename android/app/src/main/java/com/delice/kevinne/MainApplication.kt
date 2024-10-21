@@ -1,4 +1,4 @@
-package com.KevinneApp.foodDelivApp
+package com.delice.kevinne
 
 import android.app.Application
 import android.content.res.Configuration

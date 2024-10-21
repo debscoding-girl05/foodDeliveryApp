@@ -1,8 +1,10 @@
 {
   "name": "foodDelivApp",
   "slug": "foodDelivApp",
+   
   "android": {
-    "package": "com.KevinneApp.foodDelivApp",
+     "googleServicesFile": "./google-services.json",
+    "package": "com.delice.kevinne",
      "permissions": ["ACCESS_FINE_LOCATION"]
   }
 }

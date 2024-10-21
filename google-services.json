@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "954770510711",
+    "project_id": "delices-de-kevinne",
+    "storage_bucket": "delices-de-kevinne.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954770510711:android:98e5f269bd7d434c4b4772",
+        "android_client_info": {
+          "package_name": "com.delice.kevinne"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfd9QfMWNqYTLnl9t2967HbOoEeqLMmyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

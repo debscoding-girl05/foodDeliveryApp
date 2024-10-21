@@ -12,6 +12,7 @@ import { CartScreen, FavScreen} from '../screens/ClientScreens';
 import SignupScreen from '../screens/GlobalScreens/SignupScreen';
 import DelivererBottomTabNavigation from '../screens/DelivererApp/Navigation/BottomTabNav';
 import DetailCommandScreen from '../screens/DelivererApp/screens/DetailCommandScreen';
+import ModalDeliv from '../screens/DelivererApp/screens/ModalDeliv';
 
 const stack=createNativeStackNavigator();
 
@@ -45,6 +46,7 @@ const AppNavigation=()=>{
             </stack.Group>
             <stack.Group screenOptions={{ presentation: "modal" }}>
               <stack.Screen name="ModalEdit" component={ModalScreen} />
+              <stack.Screen name="ModalDeliv" component={ModalDeliv} />
             </stack.Group>
           </stack.Navigator>
         </NavigationContainer>

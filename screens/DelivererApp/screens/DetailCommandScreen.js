@@ -15,76 +15,72 @@ export default function DetailCommandScreen({route}) {
 
   return (
     <View style={styles.container}>
-        <Text style={styles.title}>Details de la Commande</Text>
-        <View>
-    <View style={styles.labelsContainer}>
-         <View style={styles.headerTitleCont}>
+      <Text style={styles.title}>Details de la Commande</Text>
+      <View>
+        <View style={styles.labelsContainer}>
+          <View style={styles.headerTitleCont}>
             <Text style={styles.headerTitle}>Informations Premières</Text>
-        </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>ID:</Text>
-        <Text style={styles.secondlabel}> {order.id}</Text>
-      </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Total:</Text>
-        <Text style={styles.secondlabel}> {order.total} FCFA</Text>
-      </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Statut: </Text>
-        <Text style={styles.secondlabel}> {order.status}</Text>
-      </View>
-       
-       <View>
-        <View style={styles.headerTitleCont}>
-            <Text style={styles.headerTitle}>Informations du Client</Text>
-        </View>
-     
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Nom: </Text>
-        <Text style={styles.secondlabel}>{order.customer.name}</Text>
-      </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Addresse: </Text>
-        <Text style={styles.secondlabel}>{order.customer.address}</Text>
-      </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Tel: </Text>
-        <Text style={styles.secondlabel}>{order.customer.phone}</Text>
-      </View>
-       </View>
-       <View>
- 
-       </View>
-       <View style={styles.headerTitleCont}>
-            <Text style={styles.headerTitle}>Contenu</Text>
-        </View>
-      {order.items.map(item => (
-          <View  key={item.id} style={styles.labelContainerItem}>
-         <Text style={styles.label}>
-          {item.name} 
-        </Text>
-         <Text style={styles.secondlabel}>
-         (x{item.quantity}) 
-        </Text>
-         <Text style={styles.secondlabel}>
-          {item.price} FCFA
-        </Text>
-
           </View>
-       
-      ))}
-      
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>ID:</Text>
+            <Text style={styles.secondlabel}> {order.id}</Text>
+          </View>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Total:</Text>
+            <Text style={styles.secondlabel}> {order.total} FCFA</Text>
+          </View>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Statut: </Text>
+            <Text style={styles.secondlabel}> {order.status}</Text>
+          </View>
+
+          <View>
+            <View style={styles.headerTitleCont}>
+              <Text style={styles.headerTitle}>Informations du Client</Text>
+            </View>
+
+            <View style={styles.labelContainer}>
+              <Text style={styles.label}>Nom: </Text>
+              <Text style={styles.secondlabel}>{order.customer.name}</Text>
+            </View>
+            <View style={styles.labelContainer}>
+              <Text style={styles.label}>Addresse: </Text>
+              <Text style={styles.secondlabel}>{order.customer.address}</Text>
+            </View>
+            <View style={styles.labelContainer}>
+              <Text style={styles.label}>Tel: </Text>
+              <Text style={styles.secondlabel}>{order.customer.phone}</Text>
+            </View>
+          </View>
+          <View></View>
+          <View style={styles.headerTitleCont}>
+            <Text style={styles.headerTitle}>Contenu</Text>
+          </View>
+          {order.items.map((item) => (
+            <View key={item.id} style={styles.labelContainerItem}>
+              <Text style={styles.label}>{item.name}</Text>
+              <Text style={styles.secondlabel}>(x{item.quantity})</Text>
+              <Text style={styles.secondlabel}>{item.price} FCFA</Text>
+            </View>
+          ))}
         </View>
-    </View>
-     {order.status === 'pending' && (
-        <TouchableOpacity 
-          style={styles.acceptButton} 
+      </View>
+      {order.status === "pending" && (
+        <TouchableOpacity
+          style={styles.acceptButton}
           onPress={() => handleAcceptOrder(order.id)}
         >
           <Text style={styles.acceptButtonText}>Accepter Commande</Text>
         </TouchableOpacity>
       )}
-     
+      {order.status === "accepted" && (
+        <TouchableOpacity
+          style={styles.acceptButton}
+          onPress={() => handleComplete(order.id)}
+        >
+          <Text style={styles.acceptButtonText}>Livraison Commande</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
