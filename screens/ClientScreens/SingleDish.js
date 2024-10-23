@@ -70,8 +70,7 @@ function SingleDish({route, navigation}) {
               style={{
                 marginTop: -315,
                 zIndex: 2,
-                marginLeft: "85%",
-                backgroundColor: "white",
+                marginLeft: "81%",
                 borderRadius: 55,
                 width: 35,
                 height: 35,
@@ -82,7 +81,7 @@ function SingleDish({route, navigation}) {
               {favorites.includes(dish.id) ? (
                 <Ionicons name="heart-sharp" size={30} color="red" />
               ) : (
-                <Ionicons name="heart-outline" size={30} color="black" />
+                <Ionicons name="heart-outline" size={30} color="red" />
               )}
             </TouchableOpacity>
           </View>
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    padding:8
+    padding: 8,
   },
   dishcontainer: {
     backgroundColor: "#FFFFFF",
@@ -230,6 +229,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E0E0E0",
     shadowColor: "#000",
   },
+  heartOutline:{
+    borderColor:'red'
+  }
 });
 
 export default SingleDish

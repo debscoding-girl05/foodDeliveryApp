@@ -43,6 +43,7 @@ export default function CartScreen() {
           alignItems: "center",
           width: 60,
           borderRadius: 15,
+          padding:25,
         }}
       >
         <FontAwesome6 name="trash" size={28} color="white" />
@@ -184,6 +185,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 22,
     paddingHorizontal: 5,
+    paddingVertical:10
   },
   quantityContainer: {
     flexDirection: "column",

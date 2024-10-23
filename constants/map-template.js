@@ -1,4 +1,4 @@
-const mapTemplate = (tomtomKey) => `
+const mapTemplate = (tomtomKey, lat, lng) => `
   <div>
     <style>
       html, body {
@@ -22,10 +22,22 @@ const mapTemplate = (tomtomKey) => `
       let map = tt.map({
         key: '${tomtomKey}', // Dynamically injected key
         container: 'map',
-        center: [-121.913, 37.361],
+        center: [${lng}, ${lat}], // Set the initial center to the user's location
         zoom: 15
       });
+
+      // Add a marker for the user's current location
+      const marker = new tt.Marker({ 
+        draggable: false // Set to true if you want to allow dragging the marker
+      }).setLngLat([${lng}, ${lat}]).addTo(map);
       
+      // Update marker position on the map center change
+      window.ReactNativeWebView.addEventListener('message', function(event) {
+        const [lng, lat] = event.data.split(",").map(Number);
+        marker.setLngLat([lng, lat]);
+      });
+
+      // Listen for dragend event to get the new center
       map.on('dragend', function() {
         let center = map.getCenter();
         window.ReactNativeWebView.postMessage(center.lng.toFixed(3) + ", " + center.lat.toFixed(3));
@@ -36,7 +48,9 @@ const mapTemplate = (tomtomKey) => `
 
 // Use the key from environment variables
 const mapHtmlContent = mapTemplate(
-  process.env.EXPO_PUBLIC_TOMTOM_DEVELOPER_KEY
+  process.env.EXPO_PUBLIC_TOMTOM_DEVELOPER_KEY,
+  11.5021, // Initial latitude, will be replaced dynamically
+  3.848 // Initial longitude, will be replaced dynamically
 );
 
 export default mapHtmlContent;

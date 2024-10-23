@@ -1,173 +1,283 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
-import WebView from "react-native-webview";
-import * as Location from "expo-location";
-import mapTemplate from "../../../constants/map-template";
-import axios from "axios";
-import { Suggestions } from "../../../constants/Suggestions";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Button,
+  Alert,
+  PermissionsAndroid,
+  Platform,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import { MapView, Camera, LocationPuck } from "@rnmapbox/maps";
+import * as Location from "expo-location"; // If using Expo
+import Mapbox from "@rnmapbox/maps";
+import { doc, setDoc, serverTimestamp, GeoPoint } from "firebase/firestore";
+import { FIRESTORE_DB, FIREBASE_AUTH } from "../../../firebaseConfig"; 
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
+// Set your Mapbox access token
+Mapbox.setAccessToken(
+  "pk.eyJ1IjoiZGVic2kiLCJhIjoiY20ya2owcnBzMDJhYTJpcXlwdGljbWMydyJ9.z1zFBadNT9X2icFU-j0QLA"
+);
 
 export default function DeliveryAddressScreen() {
   const [location, setLocation] = useState(null);
+  const [note, setNote] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state
 
-  useEffect(() => {
-    (async () => {
+  const auth = FIREBASE_AUTH; // Firebase Authentication (if needed)
+
+  // Request location permission and get the user's current location
+  const requestLocationPermission = async () => {
+    if (Platform.OS === "android") {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: "Location Permission",
+            message:
+              "This app needs access to your location to show your position on the map.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK",
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          getLocation(); // Fetch location if permission granted
+        } else {
+          Alert.alert(
+            "Permission Denied",
+            "Location permission is required to use this feature."
+          );
+        }
+      } catch (err) {
+        console.error("Error requesting location permission", err);
+      }
+    } else {
+      getLocation(); // iOS location permission handled by Expo Location
+    }
+  };
+
+  // Get user’s current location
+  const getLocation = async () => {
+    setLoading(true); // Start loading
+    try {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") return;
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Location permission is required to use this feature."
+        );
+        return;
+      }
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation.coords); // Set current location
+    } catch (error) {
+      console.error("Error getting location", error);
+      Alert.alert("Error", "Failed to retrieve location.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+  // Store location and note in Firestore
+  const storeLocationAndNote = async () => {
+    if (location) {
+      try {
+        const clientId = auth?.currentUser?.uid || "default-client-id"; // Use logged-in user UID if available
+        const clientDocRef = doc(FIRESTORE_DB, "locations", clientId);
+        await setDoc(
+          clientDocRef,
+          {
+            clientLocation: new GeoPoint(location.latitude, location.longitude),
+            note: note,
+            timestamp: serverTimestamp(),
+          },
+          { merge: true }
+        );
+        console.log("Location and note stored successfully");
+        Alert.alert("Success", "Location and note stored for delivery.");
+      } catch (error) {
+        console.error("Error storing location and note:", error);
+        Alert.alert("Error", "Failed to store location and note.");
+      }
+    } else {
+      Alert.alert("Error", "Location not found.");
+    }
+  };
+
+  // Fetch location on component mount
+  useEffect(() => {
+    requestLocationPermission();
   }, []);
 
-  let webRef = undefined;
-  let [mapCenter, setMapCenter] = useState("11.5021, 3.8480");
-  const tomtomKey = process.env.EXPO_PUBLIC_TOMTOM_DEVELOPER_KEY;
-  let [placeholder, setPlaceholder] = useState("Recherche ex: Bastos");
-  let [showList, setShowList] = useState(false);
-  let [suggestionListData, setSuggestionListData] = useState([]);
-
-  const run = `
-  document.body.style.backgroundColor = 'blue';
-  true;
-  `;
-
-  const onButtonClick = () => {
-    const [lng, lat] = mapCenter.split(",");
-    webRef.injectJavaScript(
-      `map.setCenter([${parseFloat(lng)}, ${parseFloat(lat)}])`
-    );
-  };
-
-  const onPressItem = (item) => {
-    setPlaceholder(item.address);
-    setMapCenter(`${item.lat}, ${item.lon}`);
-    setShowList(false);
-    webRef.injectJavaScript(`map.setCenter([${parseFloat(item.lon)}, 
-      ${parseFloat(item.lat)}])`);
-  };
-
-  const handleMapEvent = (event) => {
-    setMapCenter(event.nativeEvent.data);
-  };
-
-  const handleSearchTextChange = (changedSearchText) => {
-    if (!changedSearchText || changedSearchText.length < 5) return;
-
-    let baseUrl = `https://api.tomtom.com/search/2/search/${changedSearchText}.json?`;
-    let searchUrl = baseUrl + `key=${tomtomKey}`;
-
-    if (location) {
-      searchUrl = searchUrl + `&lon=${location.coords.longitude}`;
-      searchUrl = searchUrl + `&lat=${location.coords.latitude}`;
-    }
-
-    axios
-      .get(searchUrl)
-      .then((response) => {
-        let addresses = response.data.results.map((v) => {
-          let parts = v.address.freeformAddress.split(",");
-          return {
-            p1: parts.length > 0 ? parts[0] : null,
-            p2: parts.length > 1 ? parts[1] : null,
-            p3: parts.length > 2 ? parts[2] : null,
-            address: v.address.freeformAddress,
-            lat: v.position.lat,
-            lon: v.position.lon,
-          };
-        });
-
-        setSuggestionListData(addresses);
-        setShowList(true);
-      })
-      .catch(function (error) {
-        if (error.response) {
-          // Request made and server responded
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-        }
-      });
-  };
-
   return (
-    <View style={styles.container}>
-      <View style={styles.buttons}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={setMapCenter}
-          value={mapCenter}
-        ></TextInput>
+    <View style={{ flex: 1 }}>
+      <MapView style={{ flex: 1 }}>
+        {location && (
+          <Camera
+            followUserLocation
+            followZoomLevel={18}
+            centerCoordinate={[location.longitude, location.latitude]}
+          />
+        )}
+        <LocationPuck
+          puckBearingEnabled
+          puckBearing="heading"
+          pulsing={{ isEnabled: true }}
+        />
+      </MapView>
 
-        <TouchableOpacity onPress={onButtonClick} style={styles.button}>
-          <Text style={{ textAlign: "center", fontSize: 18, color: "white", fontWeight:'500',marginTop:2 }}>
-            Centrer
-          </Text>
+      {/* Button to open the modal */}
+      <View>
+        <TouchableOpacity
+          style={styles.noteButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <MaterialCommunityIcons
+            name="note-plus-outline"
+            size={28}
+            color="white"
+          />
         </TouchableOpacity>
+        <View style={styles.textNote}>
+          <Text style={styles.buttonText}>Ajouter une info</Text>
+        </View>
       </View>
+      {/* Loading indicator */}
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#FFC107" />
+        </View>
+      )}
 
-      <Suggestions
-        placeholder={placeholder}
-        showList={showList}
-        suggestionListData={suggestionListData}
-        onPressItem={onPressItem}
-        handleSearchTextChange={handleSearchTextChange}
-      ></Suggestions>
-
-      <WebView
-        ref={(r) => (webRef = r)}
-        onMessage={handleMapEvent}
-        style={styles.map}
-        originWhitelist={["*"]}
-        source={{ html: mapTemplate }}
-      />
+      {/* Modal for entering note */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Entrez une direction additionnelle
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Entrez instructions..."
+              value={note}
+              onChangeText={setNote}
+              multiline={true}
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  storeLocationAndNote(); // Save note and location to Firestore
+                  setModalVisible(false); // Close modal after saving
+                }}
+              >
+                <Text style={styles.modalbuttonText}>Enregistrer</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: "red", borderColor: "red" },
+                ]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={[styles.modalbuttonText, { color: "white" }]}>
+                  Annuler
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "column",
-    flex: 1,
+  noteButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 25,
+    backgroundColor: "#FFC107",
+    padding: 15,
+    borderRadius: 30,
   },
-  buttons: {
-    flexDirection:'row',
-    marginTop: 8,
-    marginBottom: 2,
-    borderRadius:25,
-    marginLeft:20,
-    gap:10
-
- 
+  textNote: {
+    position: "absolute",
+    bottom: 12,
+    right: 12,
+  },
+  buttonText: {
+    color: "black",
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  modalbuttonText: {
+    color: "white",
+    fontSize: 15,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 16,
+    marginBottom: 10,
   },
   textInput: {
-    height: 40,
-    width: "60%",
-    marginRight: 12,
-    paddingLeft: 5,
+    borderColor: "gray",
     borderWidth: 1,
-    borderRadius:10
+    marginBottom: 15,
+    paddingLeft: 10,
+    paddingTop: 10,
+    height: 110,
   },
-  map: {
-    transform: [{ scale: 3 }],
-    width: "100%",
-    height: "75%",
-    alignItems: "center",
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
-  button:{
-    backgroundColor:"#FFC107",
-    borderRadius:5,
-    width:75,
-    height:38,
-   marginRight:20,
-   color:'white'
-
-  }
+  modalButton: {
+    backgroundColor: "#FFC107",
+    padding: 5,
+    borderRadius: 25,
+    flex: 1,
+    marginHorizontal: 10,
+    alignItems: "center",
+    borderColor: "#FFC107",
+    borderWidth: 2,
+    color: "black",
+  },
 });

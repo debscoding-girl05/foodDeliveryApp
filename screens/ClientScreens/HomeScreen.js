@@ -27,7 +27,7 @@ function HomeScreen() {
  
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ backgroundColor: "#FFC107", paddingVertical: 10 }}>
+      <View style={{ backgroundColor: "#FFC107", paddingBottom: 10 }}>
         <View style={styles.headerContainer}>
           <Header title="Accueil" />
         </View>
@@ -103,7 +103,6 @@ function HomeScreen() {
                         style={{
                           zIndex: 10,
                           marginBottom: -35,
-                          backgroundColor: "white",
                           height: 33,
                           width: 32,
                           borderRadius: 55,
@@ -114,7 +113,7 @@ function HomeScreen() {
                         }}
                       >
                         {favorites.includes(dish.id) ? (
-                          <Ionicons name="heart-sharp" size={30} color="red" />
+                          <Ionicons name="heart-sharp" size={30} color="crimson" />
                         ) : (
                           <Ionicons
                             name="heart-outline"
@@ -175,7 +174,7 @@ function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFC107",
   },
   headerContainer: {
     backgroundColor: "#FFC107",
@@ -217,9 +216,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
     borderRadius: 20,
-    paddingVertical:2,
-    zIndex:-1
+    paddingVertical: 2,
+    zIndex: -1,
   },
 });
 
 export default HomeScreen;
+//const tomtomKey = process.env.EXPO_PUBLIC_TOMTOM_DEVELOPER_KEY;
+//import mapTemplate from "../../../constants/map-template";

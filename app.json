@@ -1,10 +1,45 @@
 {
-  "name": "foodDelivApp",
-  "slug": "foodDelivApp",
-   
-  "android": {
-     "googleServicesFile": "./google-services.json",
-    "package": "com.delice.kevinne",
-     "permissions": ["ACCESS_FINE_LOCATION"]
+  "expo": {
+    "name": "foodDelivApp",
+    "slug": "foodDelivApp",
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "package": "com.delice.kevinne",
+      "permissions": [
+        "ACCESS_FINE_LOCATION"
+      ],
+      "plugins": [
+        [
+          "@rnmapbox/maps",
+          {
+            "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiZGVic2kiLCJhIjoiY20ya2puZmg4MDJ0dTJsczEwMnk1c280bSJ9.Po9P7BLKDRKcq-u-yrji0w"
+          }
+        ],
+        [
+          "expo-location",
+          {
+            "locationWhenInUsePermission": "Show current location on map."
+          }
+        ]
+      ]
+    },
+    "plugins": [
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiZGVic2kiLCJhIjoiY20ya2puZmg4MDJ0dTJsczEwMnk1c280bSJ9.Po9P7BLKDRKcq-u-yrji0w"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c46f2f99-b7ef-41a3-890e-9b1d28c12663"
+      }
+    },
+    "splash": {
+      "image": "./assets/images/order.png", 
+      "resizeMode": "contain",         
+      "backgroundColor": "#ffffff"     
+    }
   }
 }
